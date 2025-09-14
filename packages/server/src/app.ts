@@ -19,13 +19,12 @@ import { schema } from './schema';
 import { getUser } from './auth';
 import * as loaders from './loader';
 import { Loaders } from './interface/NodeInterface';
+import { jwtSecret } from './config';
 
 const app = new Koa();
 const router = new Router();
 
-const JWT_KEY: string = process.env.JWT_KEY || '';
-
-app.keys = [JWT_KEY];
+app.keys = [jwtSecret];
 
 const graphqlSettingsPerReq = async (req: Request) => {
   const { user } = await getUser(req.header.authorization);

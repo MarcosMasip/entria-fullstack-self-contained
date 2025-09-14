@@ -1,30 +1,3 @@
-type Mutation {
-  UserChangePassword(input: UserChangePasswordInput!): UserChangePasswordPayload
-  UserLoginWithEmail(input: UserLoginWithEmailInput!): UserLoginWithEmailPayload
-  UserRegisterWithEmail(input: UserRegisterWithEmailInput!): UserRegisterWithEmailPayload
-}
-
-"""An object with an ID"""
-interface Node {
-  """The id of the object."""
-  id: ID!
-}
-
-"""Information about pagination in a connection."""
-type PageInfoExtended {
-  """When paginating forwards, are there more items?"""
-  hasNextPage: Boolean!
-
-  """When paginating backwards, are there more items?"""
-  hasPreviousPage: Boolean!
-
-  """When paginating backwards, the cursor to continue."""
-  startCursor: String
-
-  """When paginating forwards, the cursor to continue."""
-  endCursor: String
-}
-
 """The root of all... queries"""
 type Query {
   """Fetches an object given its ID"""
@@ -37,8 +10,10 @@ type Query {
   users(after: String, first: Int, before: String, last: Int, search: String): UserConnection
 }
 
-type Subscription {
-  UserAdded: UserAddedPayload
+"""An object with an ID"""
+interface Node {
+  """The id of the object."""
+  id: ID!
 }
 
 """User data"""
@@ -49,24 +24,6 @@ type User implements Node {
   name: String
   email: String
   active: Boolean
-}
-
-type UserAddedPayload {
-  userEdge: UserEdge
-}
-
-input UserChangePasswordInput {
-  oldPassword: String!
-
-  """user new password"""
-  password: String!
-  clientMutationId: String
-}
-
-type UserChangePasswordPayload {
-  error: String
-  me: User
-  clientMutationId: String
 }
 
 """A connection to a list of items."""
@@ -95,6 +52,21 @@ type UserConnection {
   edges: [UserEdge]!
 }
 
+"""Information about pagination in a connection."""
+type PageInfoExtended {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
 """An edge in a connection."""
 type UserEdge {
   """The item at the end of the edge"""
@@ -104,13 +76,39 @@ type UserEdge {
   cursor: String!
 }
 
+type Mutation {
+  UserChangePassword(input: UserChangePasswordInput!): UserChangePasswordPayload
+  UserLoginWithEmail(input: UserLoginWithEmailInput!): UserLoginWithEmailPayload
+  UserRegisterWithEmail(input: UserRegisterWithEmailInput!): UserRegisterWithEmailPayload
+}
+
+type UserChangePasswordPayload {
+  error: String
+  me: User
+  clientMutationId: String
+}
+
+input UserChangePasswordInput {
+  oldPassword: String!
+
+  """user new password"""
+  password: String!
+  clientMutationId: String
+}
+
+type UserLoginWithEmailPayload {
+  token: String
+  error: String
+  clientMutationId: String
+}
+
 input UserLoginWithEmailInput {
   email: String!
   password: String!
   clientMutationId: String
 }
 
-type UserLoginWithEmailPayload {
+type UserRegisterWithEmailPayload {
   token: String
   error: String
   clientMutationId: String
@@ -123,8 +121,10 @@ input UserRegisterWithEmailInput {
   clientMutationId: String
 }
 
-type UserRegisterWithEmailPayload {
-  token: String
-  error: String
-  clientMutationId: String
+type Subscription {
+  UserAdded: UserAddedPayload
+}
+
+type UserAddedPayload {
+  userEdge: UserEdge
 }

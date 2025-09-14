@@ -1,42 +1,34 @@
-#!/usr/bin/env babel-node --optional es7.asyncFunctions
-/**
- * This file provided by Facebook is for non-commercial testing and evaluation
- * purposes only.  Facebook reserves all rights not expressly granted.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+/* eslint-disable no-console */
+// Make this script Node 24–friendly by using CommonJS and ts-node to import the TypeScript schema
+require('ts-node/register/transpile-only');
+try {
+  require('tsconfig-paths/register');
+} catch (_) {
+  // optional
+}
 
-import fs from 'fs';
-import path from 'path';
-import { schema } from '../src/schema';
-import { graphql } from 'graphql';
-import { introspectionQuery, printSchema } from 'graphql/utilities';
+const fs = require('fs');
+const path = require('path');
+const { graphql, getIntrospectionQuery, printSchema } = require('graphql');
+const { schema } = require('../src/schema');
 
-// Save JSON of full schema introspection for Babel Relay Plugin to use
-(async () => {
-  const result = await (graphql(schema, introspectionQuery));
+async function main() {
+  // Write human-readable schema SDL
+  const sdlPath = path.join(__dirname, '../data/schema.graphql');
+  fs.writeFileSync(sdlPath, printSchema(schema));
+
+  // Write introspection JSON for Relay, etc.
+  const result = await graphql({ schema, source: getIntrospectionQuery() });
   if (result.errors) {
-    console.error(
-      'ERROR introspecting schema: ',
-      JSON.stringify(result.errors, null, 2)
-    );
-  } else {
-    fs.writeFileSync(
-      path.join(__dirname, '../data/schema.json'),
-      JSON.stringify(result, null, 2)
-    );
-
-    process.exit(0);
+    console.error('ERROR introspecting schema: ', JSON.stringify(result.errors, null, 2));
+    process.exitCode = 1;
+    return;
   }
-})();
+  const jsonPath = path.join(__dirname, '../data/schema.json');
+  fs.writeFileSync(jsonPath, JSON.stringify(result, null, 2));
+}
 
-// Save user readable type system shorthand of schema
-fs.writeFileSync(
-  path.join(__dirname, '../data/schema.graphql'),
-  printSchema(schema)
-);
+main().catch(err => {
+  console.error(err);
+  process.exitCode = 1;
+});

@@ -62,7 +62,9 @@
     "pre-commit": "^1.2.2",
     "prettier": "^2.1.2",
     "typescript": "^4.0.3",
-    "typescript-eslint-parser": "^22.0.0"
+    "typescript-eslint-parser": "^22.0.0",
+    "concurrently": "^8.2.0",
+    "rimraf": "^5.0.0"
   },
   "license": "MIT",
   "lint-staged": {
@@ -98,10 +100,10 @@
     "app:studio": "yarn workspace @entria/app studio",
     "app:xcode": "yarn workspace @entria/app xcode",
     "delete:all": "yarn delete:build && yarn delete:node_modules && yarn delete:yarn-offline-cache",
-    "delete:build": "find . -name \"build\" -exec rm -rf '{}' +",
-    "delete:node_modules": "find . -name \"node_modules\" -exec rm -rf '{}' +",
-    "delete:yarn-offline-cache": "find . -name \"yarn-offline-cache\" -exec rm -rf '{}' +",
-    "delete:yarn.lock": "find . -name \"yarn.lock\" -exec rm -rf '{}' +",
+  "delete:build": "rimraf \"**/build\"",
+  "delete:node_modules": "rimraf \"**/node_modules\"",
+  "delete:yarn-offline-cache": "rimraf \"**/yarn-offline-cache\"",
+  "delete:yarn.lock": "rimraf \"**/yarn.lock\"",
     "jest:lint": "jest --config jest-eslint.config.js",
     "lint": "eslint --ext .js packages/**",
     "lint:staged": "lint-staged",
@@ -110,7 +112,12 @@
     "start:server": "yarn workspace @entria/server start",
     "test": "jest --coverage",
     "web:relay": "yarn workspace @entria/web relay",
-    "web:start": "yarn workspace @entria/web start"
+    "web:start": "yarn workspace @entria/web start",
+    "generate:schema": "yarn workspace @entria/server update-schema",
+    "seed": "yarn workspace @entria/server seed",
+  "start:server:memory": "yarn workspace @entria/server dev:memory",
+    "setup": "yarn install && yarn generate:schema && yarn seed",
+  "dev": "yarn web:relay && concurrently --raw -k -n server,web -c blue,green \"yarn start:server:memory\" \"yarn web:start\""
   },
   "workspaces": {
     "packages": [

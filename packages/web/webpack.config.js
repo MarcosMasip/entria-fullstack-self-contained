@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
+const webPort = Number(process.env.WEB_PORT) || 3000;
 const outputPath = resolve(__dirname, 'dist');
 
 const entry = isDev ? ['./src/index.tsx', 'webpack-plugin-serve/client'] : './src/index.tsx';
@@ -15,6 +16,7 @@ const plugins = [
   new webpack.DefinePlugin({
     'process.env': {
       NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+  GRAPHQL_URL: JSON.stringify(process.env.GRAPHQL_URL || 'http://localhost:4000/graphql'),
     },
   }),
 ];
@@ -25,6 +27,7 @@ if (isDev) {
       hmr: true,
       historyFallback: true,
       static: [outputPath],
+      port: webPort,
     }),
   );
 } else {

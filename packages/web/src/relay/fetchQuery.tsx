@@ -5,16 +5,15 @@ import  { RequestNode } from 'relay-runtime';
 import { handleData, getRequestBody, getHeaders, isMutation } from './helpers';
 import fetchWithRetries from './fetchWithRetries';
 
-export const GRAPHQL_URL = 'http://localhost:5000/graphql';
+export const GRAPHQL_URL = (process.env as any).GRAPHQL_URL || 'http://localhost:4000/graphql';
 
 // Define a function that fetches the results of a request (query/mutation/etc)
 // and returns its results as a Promise:
 const fetchQuery = async (request: RequestNode, variables: Variables, uploadables: UploadableMap) => {
   try {
     const body = getRequestBody(request, variables, uploadables);
-    const headers = {
-      ...getHeaders(uploadables),
-    };
+    const baseHeaders = getHeaders(uploadables) as Record<string, string>;
+    const headers: Record<string, string> = { ...baseHeaders };
 
     const response = await fetchWithRetries(GRAPHQL_URL, {
       method: 'POST',
@@ -39,7 +38,7 @@ const fetchQuery = async (request: RequestNode, variables: Variables, uploadable
     }
 
     return data;
-  } catch (err) {
+  } catch (err: any) {
     // eslint-disable-next-line
     console.log('err: ', err);
 
