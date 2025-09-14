@@ -5,6 +5,29 @@
 
 Boilerplate using GraphQL and DataLoader
 
+## Self-contained fork notes (this repo)
+
+For local development, this fork defaults to an in-memory MongoDB—no external DB required. Prefer using the root scripts:
+
+- Install + schema + seed (from repo root):
+```bash
+yarn setup
+```
+- Start server (memory DB) + web app together (from repo root):
+```bash
+yarn dev
+```
+
+Direct server-only dev (memory DB):
+```bash
+yarn start:server:memory
+```
+
+GraphQL endpoints:
+- HTTP: http://localhost:4000/graphql
+- GraphiQL: http://localhost:4000/graphiql
+- Subscriptions (WS): ws://localhost:4000/subscriptions
+
 ## Blog Posts
 * [How to implement viewerCanSee in  GraphQL](https://medium.com/@sibelius/how-to-implement-viewercansee-in-graphql-78cc48de7464#.d9vpk6fvx)
 * [Testing a GraphQL Server using Jest](https://medium.com/@sibelius/testing-a-graphql-server-using-jest-4e00d0e4980e)
@@ -98,7 +121,7 @@ Yep, await syntax works on the repl, it is awesome, tks @princejwesley (https://
 ### Schema
 Update your schema
 ```bash
-npm run update-schema
+yarn generate:schema
 ```
 
 Take a look on the [Schema](https://github.com/entria/graphql-dataloader-boilerplate/blob/master/data/schema.graphql)
